@@ -17,5 +17,5 @@ jobs:
       with:
         SOURCE_REPO: "https://github.com/deepgram/video-chat.git"
         SOURCE_BRANCH: "master"
-        DESTINATION_REPO: ${{ secrets.GLITCH_GIT_URL }}
+        DESTINATION_REPO: ${{ secrets.glitch_git_URL }}
         DESTINATION_BRANCH: "master"
