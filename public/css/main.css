@@ -1,0 +1,119 @@
+html {
+  overflow: hidden;
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #d7dfeb;
+}
+
+.btn-fill {
+  background-color: #38edac;
+  border: #38edac solid 2px;
+  color: #141e29;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.btn-hollow {
+  color: #38edac;
+  border: #38edac solid 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+#exploreButtons > a {
+  display: inline-block;
+  width: 12rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+#exploreButtons > * + * {
+  margin-left: 2rem;
+}
+#startTranscriptionButton {
+  position: absolute;
+  height: 8%;
+  width: 50%;
+  right: 10px;
+  bottom: 10px;
+  padding: 10px;
+  font-size: x-large;
+  font-size: xx-large;
+  text-align: center;
+  z-index: 6;
+}
+
+#localVideo {
+  width: 20%;
+  position: absolute;
+  z-index: 2;
+  bottom: 10px;
+  left: 10px;
+  display: block;
+}
+#remoteVideo {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: stretch;
+  object-fit: cover;
+}
+
+.transcript {
+  color: white;
+  position: absolute;
+  background-color: #141e29;
+  overflow: hidden;
+  height: 8%;
+  width: 50%;
+  right: 10px;
+  border-radius: 5px;
+  padding: 6px;
+  font-size: x-large;
+  z-index: 4;
+  box-sizing: border-box;
+}
+
+#localTranscript {
+  bottom: 10px;
+}
+
+#remoteTranscript {
+  top: 10px;
+}
+
+.transcript-text {
+  position: absolute;
+  bottom: 0;
+}
+
+#share {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 6;
+}
+
+body {
+  background-color: #141e29;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}

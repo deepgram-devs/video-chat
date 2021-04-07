@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Video Chat</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="description" content="Deepgram Video Chat" />
+    <meta name="author" content="Deepgram" />
+    <link href="/css/main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="share">
+      <p><b>Invite someone to join:</b></p>
+      <p id="urlShare"></p>
+      <p><b>Explore the code:</b></p>
+      <div id="exploreButtons">
+        <a target="_blank" id="editOnGlitch" class="btn-hollow"
+          >Edit on Glitch</a
+        >
+        <a
+          target="_blank"
+          href="https://github.com/deepgram/video-chat"
+          class="btn-fill"
+          >See in Github</a
+        >
+      </div>
+    </div>
+    <div class="transcript" id="localTranscript"></div>
+    <div class="transcript" id="remoteTranscript"></div>
+    <video id="localVideo" playsinline autoplay muted></video>
+    <video id="remoteVideo" playsinline autoplay></video>
+    <button id="startTranscriptionButton" class="btn-fill">
+      START TRANSCRIPTION
+    </button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/recorder.min.js"></script>
+    <script src="/js/video_chat.js"></script>
+  </body>
+</html>
