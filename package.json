@@ -10,16 +10,14 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
-    "express": "^4.13.4",
-    "opus-recorder": "^8.0.3",
-    "socket.io": "1.4.*",
+    "express": "^4.17.1",
+    "socket.io": "^4.0.1",
     "ws": "^1.1.0"
   },
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^8.0.10",
-    "@types/socket.io-client": "^1.4.29",
+    "@types/node": "^12.20.0",
     "@types/webrtc": "0.0.21",
-    "eslint": "^4.2.0"
+    "eslint": "^7.23.0"
   }
 }

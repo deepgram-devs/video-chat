@@ -91,8 +91,7 @@
      * @param {any} jsonFromServer
      */
     socket.on("transcript-result", (socketId, jsonFromServer) => {
-      console.log("received:", socketId, "our socket id:", socket.id);
-      if (socketId === "/#" + socket.id) {
+      if (socketId === socket.id) {
         localTranscript.addServerAnswer(jsonFromServer);
 
         localTranscriptNode.innerHTML = "";

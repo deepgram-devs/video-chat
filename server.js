@@ -31,21 +31,19 @@ app.get("*", function (req, res) {
   res.sendFile(`${__dirname}/public/index.html`);
 });
 
-/*
- * Websocket initialization. We are using the socket.io package
- */
-const io = require("socket.io")(server);
+const SocketIoServer = require("socket.io").Server;
+const Socket = require("socket.io").Socket;
+const io = new SocketIoServer(server);
 io.sockets.on("connection", handle_connection);
-io.sockets.on("error", (e) => console.log(e));
 
 const MAX_CLIENTS = 2;
 /**
  * This function will be called every time a client
  * opens a socket with the server. We will define here
  * what to do on reaction to messages sent by clients.
- * @param {SocketIO.Socket} socket */
+ * @param {Socket} socket */
 function handle_connection(socket) {
-  const rooms = io.nsps["/"].adapter.rooms;
+  const rooms = io.of("/").adapter.rooms;
 
   socket.on("join", (room) => {
     /**
@@ -128,5 +126,5 @@ function handle_connection(socket) {
 }
 
 const listener = server.listen(process.env.PORT, () =>
-  console.log(`Server is running on port ${listener.address().port}`)
+  console.log(`Server is running on port ${process.env.PORT}`)
 );
