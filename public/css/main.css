@@ -23,18 +23,51 @@ html {
   text-decoration: none;
 }
 
+@media (max-width: 799px) {
+  #share {
+    font-size: small;
+  }
+}
+
+#exploreButtons {
+  display: flex;
+}
+
 #exploreButtons > a {
-  display: inline-block;
-  width: 12rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  display: block;
   text-align: center;
   font-weight: bold;
 }
 
-#exploreButtons > * + * {
-  margin-left: 2rem;
+@media (max-width: 799px) {
+  #exploreButtons {
+    flex-direction: column;
+  }
+  #exploreButtons > a {
+    width: 8rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  #exploreButtons > * + * {
+    margin-top: 2rem;
+  }
 }
+@media (min-width: 800px) {
+  #exploreButtons {
+    flex-direction: row;
+  }
+
+  #exploreButtons > a {
+    width: 12rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  #exploreButtons > * + * {
+    margin-left: 2rem;
+  }
+}
+
 #startTranscriptionButton {
   position: absolute;
   height: 8%;
@@ -42,10 +75,21 @@ html {
   right: 10px;
   bottom: 10px;
   padding: 10px;
-  font-size: x-large;
   font-size: xx-large;
   text-align: center;
+  font-weight: bold;
   z-index: 6;
+}
+
+@media (max-width: 799px) {
+  #startTranscriptionButton {
+    font-size: large;
+  }
+}
+@media (min-width: 800px) {
+  #startTranscriptionButton {
+    font-size: xx-large;
+  }
 }
 
 #localVideo {
