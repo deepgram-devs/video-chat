@@ -89,7 +89,7 @@ function handle_connection(socket) {
        */
       const sampleRate = 16000;
       const dgSocket = new WebSocket(
-        "wss://cab2b5852c84ae12.deepgram.com/v2/listen/stream?encoding=ogg-opus&sample_rate=" +
+        "wss://brain.deepgram.com/v2/listen/stream?encoding=ogg-opus&sample_rate=" +
           sampleRate +
           "&punctuate=true",
         {
