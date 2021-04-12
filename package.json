@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Video Chat application.",
   "main": "server.js",
-  "author": "Brian Mau",
+  "author": "Deepgram",
   "scripts": {
     "start": "node server.js",
     "debug": "node --nolazy --inspect --debug-brk=5858 ./server.js"
