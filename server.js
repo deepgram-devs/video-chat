@@ -14,6 +14,8 @@ if (DG_KEY === undefined || DG_SECRET === undefined) {
   throw "You must define DG_KEY and DG_SECRET in your .env file";
 }
 
+// Encode the Deepgram credentials in base64. Will be used to authenticate
+// through the Deepgram realtime transcription service.
 const DG_CREDENTIALS = Buffer.from(DG_KEY + ":" + DG_SECRET).toString("base64");
 
 const app = express();
@@ -64,64 +66,88 @@ function handle_connection(socket) {
       socket.join(room);
       socket.broadcast.to(room).emit("user-joined", socket.id);
 
-      /**
-       * All the following subscriptions handle the WebRTC
-       * "signaling". That means we forward all the needed data from
-       * Alice to Bob to establish a peer to peer connection. Once the peer
-       * to peer connection is established, the video stream don't go through
-       * the server.
-       */
-      socket.on("video-offer", (id, message) => {
-        socket.to(id).emit("video-offer", socket.id, message);
-      });
-      socket.on("video-answer", (id, message) => {
-        socket.to(id).emit("video-answer", socket.id, message);
-      });
-      socket.on("ice-candidate", (id, message) => {
-        socket.to(id).emit("ice-candidate", socket.id, message);
-      });
-      /** End of WebRTC "signaling" subscriptions. */
-
-      /**
-       * We forward the audio stream from client's microphone to Deepgram server.
-       * On Deepgram server response, we forward this response back to all the
-       * clients in the room
-       */
-      const sampleRate = 16000;
-      const dgSocket = new WebSocket(
-        "wss://brain.deepgram.com/v2/listen/stream?encoding=ogg-opus&sample_rate=" +
-          sampleRate +
-          "&punctuate=true",
-        {
-          headers: {
-            Authorization: "Basic " + DG_CREDENTIALS,
-          },
-        }
-      );
-
-      socket.on("microphone-stream", (stream) => {
-        if (dgSocket.readyState === WebSocket.OPEN) {
-          dgSocket.send(stream);
-        }
-      });
-
-      dgSocket.addEventListener("message", (event) => {
-        io.to(room).emit(
-          "transcript-result",
-          socket.id,
-          JSON.parse(event.data)
-        );
-      });
-      /** End of microphone streaming forwarding. */
+      setupWebRTCSignaling(socket);
+      setupRealtimeTranscription(socket, room);
 
       socket.on("disconnect", () => {
         socket.broadcast.to(room).emit("bye", socket.id);
-        if (dgSocket.readyState === WebSocket.OPEN) {
-          dgSocket.send(new Uint8Array(0));
-        }
-        dgSocket.close();
       });
     }
+  });
+}
+
+/**
+ * @param {Socket} socket
+ * @param {string} room
+ */
+function setupRealtimeTranscription(socket, room) {
+  /** The sampleRate has to match what the client uses. */
+  const sampleRate = 16000;
+  /**
+   * We connect a Websocket to Deepgram server. You can add options in the URL, see the docs:
+   * https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio
+   */
+  const dgSocket = new WebSocket(
+    "wss://brain.deepgram.com/v2/listen/stream?encoding=ogg-opus&sample_rate=" +
+      sampleRate +
+      "&punctuate=true",
+    {
+      headers: {
+        Authorization: "Basic " + DG_CREDENTIALS,
+      },
+    }
+  );
+
+  /** We have to forward the very first audio packet from the client since
+   * it contains some header data needed for audio decoding.
+   *
+   * So we send a message to the client when the socket to Deepgram is ready
+   * thus the client can start sending audio data.
+   */
+  dgSocket.addEventListener("open", () => socket.emit("can-open-mic"));
+
+  /**
+   * We forward the audio stream from client's microphone to Deepgram server.
+   */
+  socket.on("microphone-stream", (stream) => {
+    if (dgSocket.readyState === WebSocket.OPEN) {
+      dgSocket.send(stream);
+    }
+  });
+
+  /** On Deepgram server message, we forward this response back to all the
+   * clients in the room
+   */
+  dgSocket.addEventListener("message", (event) => {
+    io.to(room).emit("transcript-result", socket.id, JSON.parse(event.data));
+  });
+
+  /** Close the dsSocket when the client disconnect. */
+  socket.on("disconnect", () => {
+    if (dgSocket.readyState === WebSocket.OPEN) {
+      dgSocket.send(new Uint8Array(0));
+    }
+    dgSocket.close();
+  });
+}
+
+/**
+ * Handle the WebRTC "signaling". That means we forward all the needed data from
+ * Alice to Bob to establish a peer to peer connection. Once the peer
+ * to peer connection is established, the video stream don't go through
+ * the server.
+ *
+ * @param {Socket} socket
+ */
+function setupWebRTCSignaling(socket) {
+  socket.on("video-offer", (id, message) => {
+    socket.to(id).emit("video-offer", socket.id, message);
+  });
+  socket.on("video-answer", (id, message) => {
+    socket.to(id).emit("video-answer", socket.id, message);
+  });
+  socket.on("ice-candidate", (id, message) => {
+    socket.to(id).emit("ice-candidate", socket.id, message);
   });
 }
 

@@ -68,27 +68,14 @@ html {
   }
 }
 
-#startTranscriptionButton {
-  position: absolute;
-  height: 8%;
-  width: 50%;
-  right: 10px;
-  bottom: 10px;
-  text-align: center;
-  font-weight: bold;
-  z-index: 6;
+.interim {
+  background-color: #4f6278;
+  border-radius: 5px;
 }
 
-@media (max-width: 799px) {
-  #startTranscriptionButton {
-    font-size: large;
-  }
-}
-@media (min-width: 800px) {
-  #startTranscriptionButton {
-    font-size: xx-large;
-    padding: 10px;
-  }
+.final,
+.interim {
+  padding: 1px;
 }
 
 #localVideo {

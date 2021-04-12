@@ -5,9 +5,6 @@
     const remoteVideoNode = document.querySelector("#remoteVideo");
     const localTranscriptNode = document.querySelector("#localTranscript");
     const remoteTranscriptNode = document.querySelector("#remoteTranscript");
-    const startTranscriptButton = document.querySelector(
-      "#startTranscriptionButton"
-    );
     const shareNode = document.querySelector("#urlShare");
     const editOnGlitchNode = document.querySelector("#editOnGlitch");
     if (
@@ -15,7 +12,6 @@
       remoteVideoNode instanceof HTMLVideoElement &&
       localTranscriptNode instanceof HTMLElement &&
       remoteTranscriptNode instanceof HTMLElement &&
-      startTranscriptButton instanceof HTMLElement &&
       shareNode instanceof HTMLElement &&
       editOnGlitchNode instanceof HTMLAnchorElement
     ) {
@@ -32,11 +28,10 @@
 
       initRoom(shareNode, socket);
       setupRemoteVideo(socket, localStream, remoteVideoNode);
-      setupMicrophoneTranscription(
+      setupRealtimeTranscription(
         socket,
         localTranscriptNode,
-        remoteTranscriptNode,
-        startTranscriptButton
+        remoteTranscriptNode
       );
     } else {
       console.error("one of the html nodes was not correctly setup");
@@ -46,19 +41,21 @@
 
   /**
    * @param {SocketIOClient.Socket} socket
+   * The socket used to send audio stream and get back the transcription
    * @param {HTMLElement} localTranscriptNode
+   * The html node used to display the local transcription
    * @param {HTMLElement} remoteTranscriptNode
-   * @param {HTMLElement} startTranscriptButton
+   * The html node used to display the remote transcription
    */
-  function setupMicrophoneTranscription(
+  function setupRealtimeTranscription(
     socket,
     localTranscriptNode,
-    remoteTranscriptNode,
-    startTranscriptButton
+    remoteTranscriptNode
   ) {
     const sampleRate = 16000;
 
-    // Configure the recorder.
+    // Configure the recorder. The "Recorder" value is loaded in `index.html`
+    // with the <script src="/js/recorder.min.js"> tag.
     const recorder = new Recorder({
       encoderPath: "/js/encoderWorker.min.js",
       leaveStreamOpen: true,
@@ -70,22 +67,23 @@
       maxBuffersPerPage: 1,
     });
 
-    startTranscriptButton.addEventListener("click", (event) => {
+    /** We have to forward the very first audio packet from the client since
+     * it contains some header data needed for audio decoding.
+     *
+     * So we are waiting for the server to be ready before starting recording.
+     */
+    socket.on("can-open-mic", () => {
       recorder.start();
-      startTranscriptButton.remove();
     });
 
-    /**
-     * @param {{ buffer: any; }} e
-     */
+    /** We forward our audio stream to our server. */
     recorder.ondataavailable = (e) => {
-      if (socket.connected) {
-        socket.emit("microphone-stream", e.buffer);
-      }
+      socket.emit("microphone-stream", e.buffer);
     };
 
     const localTranscript = new Transcript();
     const remoteTranscript = new Transcript();
+
     /**
      * @param {string} socketId
      * @param {any} jsonFromServer
@@ -105,6 +103,11 @@
     });
   }
 
+  /** The server will send multiple message corresponding to
+   * the same chunk of audio, improving the transcription on each
+   * message. The following class is a little helper to keep track
+   * of the current state of the transcript.
+   */
   class Transcript {
     constructor() {
       /** @type {Map<number, {words: string, is_final: boolean}>} */
@@ -113,10 +116,15 @@
 
     /** @argument {any} jsonFromServer */
     addServerAnswer(jsonFromServer) {
-      this.chunks.set(jsonFromServer.start, {
-        words: jsonFromServer.channel.alternatives[0].transcript,
-        is_final: jsonFromServer.is_final,
-      });
+      const words = jsonFromServer.channel.alternatives[0].transcript;
+      if (words !== "") {
+        this.chunks.set(jsonFromServer.start, {
+          words,
+          // if "is_final" is true, we will never have update for this
+          // audio chunk.
+          is_final: jsonFromServer.is_final,
+        });
+      }
     }
 
     /** @returns {HTMLElement} */
