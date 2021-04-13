@@ -84,7 +84,7 @@ function setupRealtimeTranscription(socket, room) {
   /** The sampleRate has to match what the client uses. */
   const sampleRate = 16000;
   /**
-   * We connect a Websocket to Deepgram server. You can add options in the URL, see the docs:
+   * We connect a Websocket to Deepgram server. You can add options as parameters in the URL, see the docs:
    * https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio
    */
   const dgSocket = new WebSocket(
@@ -122,7 +122,7 @@ function setupRealtimeTranscription(socket, room) {
     io.to(room).emit("transcript-result", socket.id, JSON.parse(event.data));
   });
 
-  /** Close the dsSocket when the client disconnect. */
+  /** Close the dsSocket when the client disconnects. */
   socket.on("disconnect", () => {
     if (dgSocket.readyState === WebSocket.OPEN) {
       dgSocket.send(new Uint8Array(0));
@@ -134,7 +134,7 @@ function setupRealtimeTranscription(socket, room) {
 /**
  * Handle the WebRTC "signaling". That means we forward all the needed data from
  * Alice to Bob to establish a peer to peer connection. Once the peer
- * to peer connection is established, the video stream don't go through
+ * to peer connection is established, the video stream won't go through
  * the server.
  *
  * @param {Socket} socket
