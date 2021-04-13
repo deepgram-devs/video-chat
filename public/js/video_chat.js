@@ -85,11 +85,10 @@
     const localTranscript = new Transcript();
     const remoteTranscript = new Transcript();
 
-    /**
+    /**  As Deepgram returns realtime transcripts, display them back in the DOM
      * @param {string} socketId
      * @param {any} jsonFromServer
-     */
-    //  As Deepgram returns realtime transcripts, display them back in the DOM
+     */  
     socket.on("transcript-result", (socketId, jsonFromServer) => {
       if (socketId === socket.id) {
         localTranscript.addServerAnswer(jsonFromServer);
@@ -181,8 +180,7 @@
      * - create a new RTC connection,
      * - when the connection is ready, send a "video-offer" message to Bob
      *   with the needed data to setup its own RTC connection.
-     */
-    /**
+     *
      * @param {string} peerSocketId
      */
     socket.on("user-joined", (peerSocketId) => {
@@ -211,8 +209,7 @@
      * - create our own RTC connection,
      * - intialize it with the description he received,
      * - send back a "video-answer" message" to Alice.
-     */
-    /**
+     *
      * @param {string} peerSocketId
      * @param {RTCSessionDescriptionInit} description
      */
@@ -241,8 +238,7 @@
      * Thus Alice will receive this "video-answer" message.
      * She will use this description to finalize the peer
      * connection configuration.
-     */
-    /**
+     *
      * @param {string} peerSocketId
      * @param {RTCSessionDescriptionInit} description
      */
@@ -256,8 +252,7 @@
      * used. We just have to forward these candidates to the corresponding
      * peer connection which will take care of comparing this
      * candidate with what it can handle.
-     */
-    /**
+     *
      * @param {string} peerSocketId
      * @param {RTCIceCandidateInit} candidate
      */
@@ -271,8 +266,7 @@
 
     /** A client in the root has left, we close the corresponding
      * connection
-     */
-    /**
+     *
      * @param {string} peerSocketId
      */
     socket.on("bye", (peerSocketId) => {
@@ -346,6 +340,7 @@
    * - forward ICE candidates to the peer through the socket. This is
    *   required by the RTC protocol to make both clients agree on what
    *   video/audio format and quality using.
+   * 
    * @param {string} peerSocketId
    * @param {MediaStream} localStream
    * @param {HTMLVideoElement} remoteVideoNode
