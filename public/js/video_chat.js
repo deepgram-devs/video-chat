@@ -19,6 +19,7 @@
 
       const socket = io.connect(window.location.origin);
 
+      //  Request access to the user's microphone and camera
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: { facingMode: "user" },
@@ -88,6 +89,7 @@
      * @param {string} socketId
      * @param {any} jsonFromServer
      */
+    //  As Deepgram returns realtime transcripts, display them back in the DOM
     socket.on("transcript-result", (socketId, jsonFromServer) => {
       if (socketId === socket.id) {
         localTranscript.addServerAnswer(jsonFromServer);
