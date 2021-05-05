@@ -6,7 +6,9 @@ voice to text in realtime in a small "Video Chat".
 > **WARNING**: This is an example application only designed for demoing. We
 > strongly discourage direct use of this code in production environment.
 
-## How can I deploy it?
+## How can I run it?
+
+### Deploy on Glitch
 
 You can "remix" this application on Glitch:
 
@@ -18,23 +20,53 @@ You can "remix" this application on Glitch:
 When accessing this URL in your browser, the project will be forked and deployed. Glitch comes with
 an online editor so you'll have all the needed tools to play with your own app instance!
 
-## How does it work
+### Run on localhost
 
-The code is mainly split into the server (`server.js`) and the client (`public/js/video_chat.js`).
+You can also run this project on your computer. First, grab the repo:
+
+```bash
+# Clone this repo
+git clone https://github.com/deepgram/talk-time-analytics.git
+# move to the created directory
+cd talk-time-analytics
+# install the dependencies
+npm install
+```
+
+Then create a file named `.env`, copy-paste the content of the following snippet
+replaceing `INSERT_KEY_HERE` and `INSERT_SECRET_HERE` with your API key and secret
+(note this is bash-like file, so spaces around `=` are not allowed).
+
+```bash
+PORT=3000
+DG_KEY=INSERT_KEY_HERE
+DG_SECRET=INSERT_SECRET_HERE
+```
+
+Finally, launch the project:
+
+```
+npm start
+```
+
+## How does it work?
+
+The code is mainly split into the server (`server.js`) and the browser (`public/js/video_chat.js`).
 
 ### Voice to Text Feature
 
-The client sends audio stream to the server. In turns, the server forwards this audio
+The browser records the microphone using the [opus-recorder library](https://github.com/chris-rudmin/opus-recorder),
+then sends the audio stream to the server. In turns, the server forwards this audio
 stream to Deepgram API, using your Deepgram API key to authenticate. When we have
 transcription back from Deepgram API, we broadcast this transcription to all the room members.
 
-You could directly connect the client to Deepgram API, _BUT_ this would ask you disclosing
-your Deepgram API key to the client. Think about it twice before choosing this option.
+You could directly connect the browser to Deepgram API, _BUT_ this would ask you disclosing
+your Deepgram API key to the browser. Think about it twice before choosing this option.
 
 For more details check out the following functions:
 
-- `setupRealtimeTranscription` in `server.js`,
-- `setupRealtimeTranscription` in `public/js/video_chat.js`.
+- `setupRealtimeTranscription` in [`server.js`](./server.js),
+- `setupRealtimeTranscription` in [`public/js/video_chat.js`](.public/js/video_chat.js).
 
 ### Video Chat Feature
 
@@ -44,8 +76,8 @@ peer to peer connection is established, the audio and video stream don't go thro
 
 For more details check out the following functions:
 
-- `setupWebRTCSignaling` in `server.js`,
-- `createAndSetupPeerConnection` in `public/js/video_chat.js`.
+- `setupWebRTCSignaling` in [`server.js`](./server.js),
+- `createAndSetupPeerConnection` in [`public/js/video_chat.js`](.public/js/video_chat.js).
 
 ## Development and Contributing
 
