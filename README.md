@@ -66,7 +66,7 @@ your Deepgram API key to the browser. Think about it twice before choosing this 
 For more details check out the following functions:
 
 - `setupRealtimeTranscription` in [`server.js`](./server.js),
-- `setupRealtimeTranscription` in [`public/js/video_chat.js`](.public/js/video_chat.js).
+- `setupRealtimeTranscription` in [`public/js/video_chat.js`](./public/js/video_chat.js).
 
 ### Video Chat Feature
 
@@ -77,7 +77,7 @@ peer to peer connection is established, the audio and video stream don't go thro
 For more details check out the following functions:
 
 - `setupWebRTCSignaling` in [`server.js`](./server.js),
-- `createAndSetupPeerConnection` in [`public/js/video_chat.js`](.public/js/video_chat.js).
+- `createAndSetupPeerConnection` in [`public/js/video_chat.js`](./public/js/video_chat.js).
 
 ## Development and Contributing
 
