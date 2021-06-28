@@ -35,7 +35,7 @@ Then copy the `.env-example` file into a new file named `.env`, and edit the new
 reflect the settings you want to use:
 
 - `PORT`: The port on which you want to run the application. You can leave this as port 3000.
-- `YOUR_DEEPGRAM_API_KEY`: The API Key you created earlier in this tutorial.
+- `DG_KEY`: The API Key you created earlier in this tutorial.
 
 (Note that this is a bash-like file, so spaces around `=` are not allowed.)
 
