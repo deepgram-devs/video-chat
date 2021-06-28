@@ -1,4 +1,4 @@
-/* The `dotenv` package allows us to load environement
+/* The `dotenv` package allows us to load environment
  * variables from the `.env` file. Then, we can access them
  * with `process.env.ENV_VAR_NAME`.
  */
@@ -8,23 +8,18 @@ const http = require("http");
 const WebSocket = require("ws");
 
 const DG_KEY = process.env.DG_KEY;
-const DG_SECRET = process.env.DG_SECRET;
 
-if (DG_KEY === undefined || DG_SECRET === undefined) {
-  throw "You must define DG_KEY and DG_SECRET in your .env file";
+if (DG_KEY === undefined) {
+  throw "You must define DG_KEY in your .env file";
 }
-
-// Encode the Deepgram credentials in base64. Will be used to authenticate
-// through the Deepgram realtime transcription service.
-const DG_CREDENTIALS = Buffer.from(DG_KEY + ":" + DG_SECRET).toString("base64");
 
 const app = express();
 let server = http.createServer(app);
 
 /*
  * Basic configuration:
- * - we expose the `/public` folder as a "static" folder, so
- *   browser can directly request js and css files in it.
+ * - we expose the `/public` folder as a "static" folder, so the
+ *   browser can directly request the js and css files that it contains.
  * - we send the `/public/index.html` file when the browser requests
  *   any route.
  */
@@ -41,8 +36,8 @@ io.sockets.on("connection", handle_connection);
 const MAX_CLIENTS = 2;
 /**
  * This function will be called every time a client
- * opens a socket with the server. We will define here
- * what to do on reaction to messages sent by clients.
+ * opens a socket with the server. This is where we will define
+ * what to do in reaction to messages sent by clients.
  * @param {Socket} socket */
 function handle_connection(socket) {
   const rooms = io.of("/").adapter.rooms;
@@ -50,10 +45,10 @@ function handle_connection(socket) {
   socket.on("join", (room) => {
     /**
      *  The `room` parameter comes from the client. Here is a possible user story:
-     * - Alice wants to open a new room, so she generates a random string (say "AWSMDG")
-     *   which will serve as a room identifier. She sends a `join` message with "AWSMDG" as
-     *   parameter to open the room and send this identifier to Bob,
-     * - to join the room, Bob has to send this same `join` message with "AWSMDG" as parameter.
+     * - Alice wants to open a new room, so she generates a random string (for example, "AWSMDG"),
+     *   which will serve as a room identifier. She sends a `join` message with "AWSMDG" as a
+     *   parameter; this opens the room and sends the identifier to Bob,
+     * - To join the room, Bob must send the same `join` message with "AWSMDG" as a parameter.
      */
 
     let clientsCount = 0;
@@ -81,33 +76,33 @@ function handle_connection(socket) {
  * @param {string} room
  */
 function setupRealtimeTranscription(socket, room) {
-  /** The sampleRate has to match what the client uses. */
+  /** The sampleRate must match what the client uses. */
   const sampleRate = 16000;
   /**
-   * We connect a Websocket to Deepgram server. You can add options as parameters in the URL, see the docs:
-   * https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio
+   * We connect a Websocket to Deepgram's server. You can add options as parameters in the URL. To learn more, see the docs:
+   * https://developers.deepgram.com/api-reference/deepgram-api#operation/transcribeStreamingAudio
    */
   const dgSocket = new WebSocket(
-    "wss://brain.deepgram.com/v2/listen/stream?encoding=ogg-opus&sample_rate=" +
+    "wss://dev.brain.deepgram.com:8090/v1/listen/stream?encoding=ogg-opus&sample_rate=" +
       sampleRate +
       "&punctuate=true",
     {
       headers: {
-        Authorization: "Basic " + DG_CREDENTIALS,
+        Authorization: "token " + DG_KEY,
       },
     }
   );
 
-  /** We have to forward the very first audio packet from the client since
+  /** We must receive the very first audio packet from the client because
    * it contains some header data needed for audio decoding.
    *
-   * So we send a message to the client when the socket to Deepgram is ready
-   * thus the client can start sending audio data.
+   * Thus, we send a message to the client when the socket to Deepgram is ready,
+   * so the client knows it can start sending audio data.
    */
   dgSocket.addEventListener("open", () => socket.emit("can-open-mic"));
 
   /**
-   * We forward the audio stream from client's microphone to Deepgram server.
+   * We forward the audio stream from the client's microphone to Deepgram's server.
    */
   socket.on("microphone-stream", (stream) => {
     if (dgSocket.readyState === WebSocket.OPEN) {
@@ -115,14 +110,14 @@ function setupRealtimeTranscription(socket, room) {
     }
   });
 
-  /** On Deepgram server message, we forward this response back to all the
-   * clients in the room
+  /** On Deepgram's server message, we forward the response back to all the
+   * clients in the room.
    */
   dgSocket.addEventListener("message", (event) => {
     io.to(room).emit("transcript-result", socket.id, JSON.parse(event.data));
   });
 
-  /** Close the dsSocket when the client disconnects. */
+  /** We close the dsSocket when the client disconnects. */
   socket.on("disconnect", () => {
     if (dgSocket.readyState === WebSocket.OPEN) {
       dgSocket.send(new Uint8Array(0));
@@ -132,10 +127,9 @@ function setupRealtimeTranscription(socket, room) {
 }
 
 /**
- * Handle the WebRTC "signaling". That means we forward all the needed data from
- * Alice to Bob to establish a peer to peer connection. Once the peer
- * to peer connection is established, the video stream won't go through
- * the server.
+ * Handle the WebRTC "signaling". This means we forward all the needed data from
+ * Alice to Bob to establish a peer-to-peer connection. Once the peer-to-peer 
+ * connection is established, the video stream won't go through the server.
  *
  * @param {Socket} socket
  */
