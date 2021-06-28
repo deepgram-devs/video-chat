@@ -1,6 +1,6 @@
 (async function () {
   async function main() {
-    /* The HTML nodes used for rendering */
+    /* The HTML nodes used for rendering. */
     const localVideoNode = document.querySelector("#localVideo");
     const remoteVideoNode = document.querySelector("#remoteVideo");
     const localTranscriptNode = document.querySelector("#localTranscript");
@@ -19,7 +19,7 @@
 
       const socket = io.connect(window.location.origin);
 
-      //  Request access to the user's microphone and camera
+      // Request access to the user's microphone and camera.
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: { facingMode: "user" },
@@ -35,18 +35,18 @@
         remoteTranscriptNode
       );
     } else {
-      console.error("one of the html nodes was not correctly setup");
+      console.error("one of the HTML nodes was not set up correctly");
       return;
     }
   }
 
   /**
    * @param {SocketIOClient.Socket} socket
-   * The socket used to send audio stream and get back the transcription
+   * The socket used to send the audio stream and get back the transcription.
    * @param {HTMLElement} localTranscriptNode
-   * The html node used to display the local transcription
+   * The HTML node used to display the local transcription.
    * @param {HTMLElement} remoteTranscriptNode
-   * The html node used to display the remote transcription
+   * The HTML node used to display the remote transcription.
    */
   function setupRealtimeTranscription(
     socket,
@@ -68,16 +68,16 @@
       maxBuffersPerPage: 1,
     });
 
-    /** We have to forward the very first audio packet from the client since
+    /** We must forward the very first audio packet from the client because
      * it contains some header data needed for audio decoding.
      *
-     * So we are waiting for the server to be ready before starting recording.
+     * Thus, we must wait for the server to be ready before we start recording.
      */
     socket.on("can-open-mic", () => {
       recorder.start();
     });
 
-    /** We forward our audio stream to our server. */
+    /** We forward our audio stream to the server. */
     recorder.ondataavailable = (e) => {
       socket.emit("microphone-stream", e.buffer);
     };
@@ -85,7 +85,7 @@
     const localTranscript = new Transcript();
     const remoteTranscript = new Transcript();
 
-    /**  As Deepgram returns realtime transcripts, display them back in the DOM
+    /** As Deepgram returns real-time transcripts, we display them back in the DOM.
      * @param {string} socketId
      * @param {any} jsonFromServer
      */  
@@ -104,9 +104,9 @@
     });
   }
 
-  /** The server will send multiple message corresponding to
+  /** The server will send multiple messages that correspond to
    * the same chunk of audio, improving the transcription on each
-   * message. The following class is a little helper to keep track
+   * message. The following class is a helper to keep track
    * of the current state of the transcript.
    */
   class Transcript {
@@ -121,7 +121,7 @@
       if (words !== "") {
         this.chunks.set(jsonFromServer.start, {
           words,
-          // if "is_final" is true, we will never have update for this
+          // if "is_final" is true, we will never have future updates for this
           // audio chunk.
           is_final: jsonFromServer.is_final,
         });
@@ -147,39 +147,37 @@
   }
 
   /**
-   * Setup all the needed subscriptions on the socket to display
+   * Sets up the needed subscriptions on the socket to display
    * the remote video in remoteVideoNode.
    *
-   * The websocket is NOT used to forward the video stream, it is only used to forward
-   * data to the peer in order to establish a peer to peer connection. Then the video
-   * and audio streams will be transfered through this peer to peer connection.
+   * The websocket is NOT used to forward the video stream; it only forwards data to
+   * the peer to establish a peer-to-peer connection through which the video and 
+   * audio streams will be transfered.
    *
-   * @param {SocketIOClient.Socket} socket This socket has to be "room initialized"
-   *                                       with a call like `initRoom(socket)`.
+   * @param {SocketIOClient.Socket} socket 
+   * This socket has to be "room initialized" with a call like `initRoom(socket)`.
    * @param {MediaStream} localStream
    * @param {HTMLVideoElement} remoteVideoNode
    */
   function setupRemoteVideo(socket, localStream, remoteVideoNode) {
     /**
-     * Will be used to track all the peer to peer
+     * Will be used to track all the peer-to-peer
      * connections we'll have with other clients.
      * @type {Map<string, RTCPeerConnection>}
      */
     const allPeerConnections = new Map();
 
     /**
-     * Suppose Alice is already connected. She sends to Bob
-     * her link.
-     */
-
-    /**
-     * Then Bob joins the same room than Alice, so Alice
-     * receives a "user-joined" message with `peerSocketId`
-     * being Bob's identifier.
-     * Then Alice will:
-     * - create a new RTC connection,
-     * - when the connection is ready, send a "video-offer" message to Bob
-     *   with the needed data to setup its own RTC connection.
+     * Suppose we have two clients: Alice and Bob. Alice has already connected. She 
+     * sends her link to Bob.
+     *
+     * Bob uses the link to join the same room as Alice, so Alice receives a 
+     * "user-joined" message; `peerSocketId` is  Bob's identifier.
+     *
+     * Alice will then:
+     * - create a new RTC connection
+     * - when the connection is ready, send a "video-offer" message to Bob that contains 
+     *   the necessary data to set up his own RTC connection.
      *
      * @param {string} peerSocketId
      */
@@ -205,10 +203,10 @@
     });
 
     /**
-     * After that, Bob receives this "video-offer" message. He will:
-     * - create our own RTC connection,
-     * - intialize it with the description he received,
-     * - send back a "video-answer" message" to Alice.
+     * Bob receives the "video-offer" message. He will:
+     * - create his own RTC connection
+     * - intialize it with the description he received from Alice
+     * - send back a "video-answer" message" to Alice
      *
      * @param {string} peerSocketId
      * @param {RTCSessionDescriptionInit} description
@@ -235,8 +233,8 @@
     });
 
     /**
-     * Thus Alice will receive this "video-answer" message.
-     * She will use this description to finalize the peer
+     * Alice receives the "video-answer" message from Bob.
+     * She uses the contained description to finalize the peer
      * connection configuration.
      *
      * @param {string} peerSocketId
@@ -249,8 +247,8 @@
 
     /**
      * An ICE candidate describes what video/audio format can be
-     * used. We just have to forward these candidates to the corresponding
-     * peer connection which will take care of comparing this
+     * used. We just must forward these candidates to the corresponding
+     * peer connection, which will take care of comparing this
      * candidate with what it can handle.
      *
      * @param {string} peerSocketId
@@ -265,7 +263,7 @@
     });
 
     /** A client in the root has left, we close the corresponding
-     * connection
+     * connection.
      *
      * @param {string} peerSocketId
      */
@@ -278,17 +276,18 @@
   }
 
   /**
-   * Retreive the room id and make the socket
-   * the corresponding room
+   * Retrieves the room ID and makes the socket
+   * the corresponding room.
+   *
    * @param {HTMLElement} shareNode
    * @param {SocketIOClient.Socket} socket
    */
   function initRoom(shareNode, socket) {
     /**
-     * The room Id is specified in the path.
-     * We expect having something like `/{roomId}`.
-     * In case of no room id in the URL, we generate a random one
-     * and update the url in the navigation bar (without adding
+     * The room ID is specified in the path. We expect something like `/{roomId}`.
+     *
+     * In case there is no room ID in the URL, we generate a random one
+     * and update the URL in the navigation bar (without adding
      * a new entry in the history).
      */
     const roomRequested = location.pathname.substring(1);
@@ -305,6 +304,7 @@
   /**
    * Modify the "Edit on Glitch" tag to point to the
    * Glitch editor.
+   *
    * @param {HTMLAnchorElement} editOnGlitchNode
    */
   function initEditGlitch(editOnGlitchNode) {
@@ -332,14 +332,14 @@
 
   /**
    * Create a RTC peer connection and:
-   * - add this connection to `allPeerConnections`,
-   * - add the local stream as a outgoing tracks to the peer connection
-   *   so the local stream can be send to the peer,
-   * - conversely, bind the incoming tracks to remoteVideoNode.srcObject
-   *   so we can see the peer's stream,
+   * - add this connection to `allPeerConnections`
+   * - add the local stream as outgoing tracks to the peer connection
+   *   so the local stream can be sent to the peer
+   * - conversely, bind incoming tracks to remoteVideoNode.srcObject,
+   *   so we can see the peer's stream
    * - forward ICE candidates to the peer through the socket. This is
    *   required by the RTC protocol to make both clients agree on what
-   *   video/audio format and quality using.
+   *   video/audio format and quality to use.
    * 
    * @param {string} peerSocketId
    * @param {MediaStream} localStream
