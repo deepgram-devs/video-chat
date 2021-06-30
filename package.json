@@ -9,6 +9,7 @@
     "debug": "node --nolazy --inspect --debug-brk=5858 ./server.js"
   },
   "dependencies": {
+    "@deepgram/sdk": "^1.0.0-alpha.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "socket.io": "^4.0.1",

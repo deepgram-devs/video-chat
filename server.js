@@ -6,6 +6,7 @@ require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
+const { Deepgram } = require('@deepgram/sdk');
 
 const DG_KEY = process.env.DG_KEY;
 
@@ -78,20 +79,12 @@ function handle_connection(socket) {
 function setupRealtimeTranscription(socket, room) {
   /** The sampleRate must match what the client uses. */
   const sampleRate = 16000;
-  /**
-   * We connect a Websocket to Deepgram's server. You can add options as parameters in the URL. To learn more, see the docs:
-   * https://developers.deepgram.com/api-reference/deepgram-api#operation/transcribeStreamingAudio
-   */
-  const dgSocket = new WebSocket(
-    "wss://dev.brain.deepgram.com:8090/v1/listen/stream?encoding=ogg-opus&sample_rate=" +
-      sampleRate +
-      "&punctuate=true",
-    {
-      headers: {
-        Authorization: "token " + DG_KEY,
-      },
-    }
-  );
+
+  const deepgram = new Deepgram(DG_KEY);
+
+  const dgSocket = deepgram.transcription.live({
+    punctuate: true
+  });
 
   /** We must receive the very first audio packet from the client because
    * it contains some header data needed for audio decoding.
@@ -99,13 +92,13 @@ function setupRealtimeTranscription(socket, room) {
    * Thus, we send a message to the client when the socket to Deepgram is ready,
    * so the client knows it can start sending audio data.
    */
-  dgSocket.addEventListener("open", () => socket.emit("can-open-mic"));
+  dgSocket.addListener("open", () => socket.emit("can-open-mic"));
 
   /**
    * We forward the audio stream from the client's microphone to Deepgram's server.
    */
   socket.on("microphone-stream", (stream) => {
-    if (dgSocket.readyState === WebSocket.OPEN) {
+    if (dgSocket.getReadyState() === WebSocket.OPEN) {
       dgSocket.send(stream);
     }
   });
@@ -113,16 +106,16 @@ function setupRealtimeTranscription(socket, room) {
   /** On Deepgram's server message, we forward the response back to all the
    * clients in the room.
    */
-  dgSocket.addEventListener("message", (event) => {
-    io.to(room).emit("transcript-result", socket.id, JSON.parse(event.data));
+  dgSocket.addListener("message", (transcription) => {
+    io.to(room).emit("transcript-result", socket.id, transcription);
   });
 
   /** We close the dsSocket when the client disconnects. */
   socket.on("disconnect", () => {
-    if (dgSocket.readyState === WebSocket.OPEN) {
+    if (dgSocket.getReadyState() === WebSocket.OPEN) {
       dgSocket.send(new Uint8Array(0));
     }
-    dgSocket.close();
+    dgSocket.finish();
   });
 }
 
