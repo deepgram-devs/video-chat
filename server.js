@@ -113,9 +113,8 @@ function setupRealtimeTranscription(socket, room) {
   /** We close the dsSocket when the client disconnects. */
   socket.on("disconnect", () => {
     if (dgSocket.getReadyState() === WebSocket.OPEN) {
-      dgSocket.send(new Uint8Array(0));
+      dgSocket.finish();
     }
-    dgSocket.finish();
   });
 }
 
