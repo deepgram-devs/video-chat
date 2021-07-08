@@ -1,6 +1,6 @@
 {
   "name": "video-chat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Video Chat application.",
   "main": "server.js",
   "author": "Deepgram",
