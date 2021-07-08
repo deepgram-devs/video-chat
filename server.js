@@ -106,7 +106,7 @@ function setupRealtimeTranscription(socket, room) {
   /** On Deepgram's server message, we forward the response back to all the
    * clients in the room.
    */
-  dgSocket.addListener("message", (transcription) => {
+  dgSocket.addListener("transcriptReceived", (transcription) => {
     io.to(room).emit("transcript-result", socket.id, transcription);
   });
 

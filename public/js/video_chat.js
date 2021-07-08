@@ -88,7 +88,7 @@
     /** As Deepgram returns real-time transcripts, we display them back in the DOM.
      * @param {string} socketId
      * @param {any} jsonFromServer
-     */  
+     */
     socket.on("transcript-result", (socketId, jsonFromServer) => {
       if (socketId === socket.id) {
         localTranscript.addServerAnswer(jsonFromServer);
@@ -117,7 +117,7 @@
 
     /** @argument {any} jsonFromServer */
     addServerAnswer(jsonFromServer) {
-      const words = jsonFromServer.channel.alternatives[0].transcript;
+      const words = JSON.parse(jsonFromServer).channel.alternatives[0].transcript;
       if (words !== "") {
         this.chunks.set(jsonFromServer.start, {
           words,
@@ -152,7 +152,7 @@
    *
    * The websocket is NOT used to forward the video stream; it only forwards data to
    * the peer to establish a peer-to-peer connection through which the video and 
-   * audio streams will be transfered.
+   * audio streams will be transferred.
    *
    * @param {SocketIOClient.Socket} socket 
    * This socket has to be "room initialized" with a call like `initRoom(socket)`.
@@ -205,7 +205,7 @@
     /**
      * Bob receives the "video-offer" message. He will:
      * - create his own RTC connection
-     * - intialize it with the description he received from Alice
+     * - initialize it with the description he received from Alice
      * - send back a "video-answer" message" to Alice
      *
      * @param {string} peerSocketId
