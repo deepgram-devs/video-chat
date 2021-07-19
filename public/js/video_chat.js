@@ -20,10 +20,18 @@
       const socket = io.connect(window.location.origin);
 
       // Request access to the user's microphone and camera.
-      const localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: { facingMode: "user" },
-      });
+      let localStream;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: { facingMode: "user" },
+        });
+      } catch {
+        alert(
+          "No microphone found. Please activate your microphone and refresh the page."
+        );
+        return;
+      }
 
       localVideoNode.srcObject = localStream;
 
@@ -117,7 +125,8 @@
 
     /** @argument {any} jsonFromServer */
     addServerAnswer(jsonFromServer) {
-      const words = JSON.parse(jsonFromServer).channel.alternatives[0].transcript;
+      const words = JSON.parse(jsonFromServer).channel.alternatives[0]
+        .transcript;
       if (words !== "") {
         this.chunks.set(jsonFromServer.start, {
           words,
@@ -151,10 +160,10 @@
    * the remote video in remoteVideoNode.
    *
    * The websocket is NOT used to forward the video stream; it only forwards data to
-   * the peer to establish a peer-to-peer connection through which the video and 
+   * the peer to establish a peer-to-peer connection through which the video and
    * audio streams will be transferred.
    *
-   * @param {SocketIOClient.Socket} socket 
+   * @param {SocketIOClient.Socket} socket
    * This socket has to be "room initialized" with a call like `initRoom(socket)`.
    * @param {MediaStream} localStream
    * @param {HTMLVideoElement} remoteVideoNode
@@ -168,15 +177,15 @@
     const allPeerConnections = new Map();
 
     /**
-     * Suppose we have two clients: Alice and Bob. Alice has already connected. She 
+     * Suppose we have two clients: Alice and Bob. Alice has already connected. She
      * sends her link to Bob.
      *
-     * Bob uses the link to join the same room as Alice, so Alice receives a 
+     * Bob uses the link to join the same room as Alice, so Alice receives a
      * "user-joined" message; `peerSocketId` is  Bob's identifier.
      *
      * Alice will then:
      * - create a new RTC connection
-     * - when the connection is ready, send a "video-offer" message to Bob that contains 
+     * - when the connection is ready, send a "video-offer" message to Bob that contains
      *   the necessary data to set up his own RTC connection.
      *
      * @param {string} peerSocketId
@@ -340,7 +349,7 @@
    * - forward ICE candidates to the peer through the socket. This is
    *   required by the RTC protocol to make both clients agree on what
    *   video/audio format and quality to use.
-   * 
+   *
    * @param {string} peerSocketId
    * @param {MediaStream} localStream
    * @param {HTMLVideoElement} remoteVideoNode
