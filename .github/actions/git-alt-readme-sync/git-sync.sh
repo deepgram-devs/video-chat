@@ -6,6 +6,7 @@ SOURCE_REPO=$1
 SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
+ALT_README_PATH=$5
 
 if ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
@@ -47,5 +48,12 @@ if [[ -n "$DESTINATION_SSH_PRIVATE_KEY" ]]; then
   # Push using destination ssh key if provided
   git config --local core.sshCommand "/usr/bin/ssh -i ~/.ssh/dst_rsa"
 fi
+
+echo "****"
+ls .github/workflows
+echo "****"
+cp $ALT_README_PATH 'README.md'
+git add 'README.md'
+git commit -m 'use alternative README.md'
 
 git push destination "${SOURCE_BRANCH}:${DESTINATION_BRANCH}" -f

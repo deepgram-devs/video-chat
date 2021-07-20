@@ -2,7 +2,11 @@ Fork from https://github.com/wei/git-sync.
 
 # Git Alt Readme Sync
 
-A GitHub Action for: syncing between two independent repositories using **force push**.
+A GitHub Action for:
+
+- cloning a repository
+- changing the README.md of this repository,
+- **force** pushing to an independant repository.
 
 ## Features
 
@@ -25,13 +29,14 @@ jobs:
   git-sync:
     runs-on: ubuntu-latest
     steps:
-      - name: git-sync
-        uses: wei/git-sync@v3
+      - name: git-alt-readme-sync
+        uses: ./github/actions/git-alt-readme-sync
         with:
           source_repo: "source_org/repository"
           source_branch: "main"
           destination_repo: "destination_org/repository"
           destination_branch: "main"
+          alt_readme: "path/to/alternate/README.md"
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} # optional
           source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }} # optional, will override `SSH_PRIVATE_KEY`
           destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }} # optional, will override `SSH_PRIVATE_KEY`
