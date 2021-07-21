@@ -40,11 +40,13 @@ Once these variables are set, the application should run automatically.
 
 ### Run on localhost
 
-To run this project on your local computer:
+You can also run this project on your local computer. To do so, you will need
+to clone the repository, configure the settings, install the dependencies, and
+start the server.
 
 #### Clone the repository
 
-Either clone or download the repository to your local machine, in a new directory.
+Either clone or download the repository to your local machine in a new directory:
 
 ```bash
 # Clone this repo
@@ -57,7 +59,7 @@ cd video-chat
 #### Configure the settings
 
 Your application will need to know more about you before it can run. Copy the
-`.env-example` file into a new file named `.env` and edit this new file to
+`.env-example` file into a new file named `.env`, and edit the new file to
 reflect the settings you want to use:
 
 - `PORT`: The port you wish to run the application on. Leaving this as port 3000
@@ -67,7 +69,7 @@ is acceptable.
 #### Install the dependencies
 
 In the directory where you downloaded the code, run the following command to
-bring in the dependencies needed for this project.
+bring in the dependencies needed for this project:
 
 ```bash
 npm install
@@ -75,14 +77,14 @@ npm install
 
 #### Start the server
 
-With the configuration done and the dependencies in place, your application
+Now that you have configured your application and put the dependencies in place, your application
 is ready to go! Run it with:
 
 ```bash
 npm start
 ```
 
-## Development and Contributing
+## Development and contributing
 
 Interested in contributing? We ❤️ pull requests!
 
@@ -90,7 +92,7 @@ To make sure our community is safe for all, be sure to review and agree to our
 [Code of Conduct](./CODE_OF_CONDUCT.md). Then see the
 [Contribution](./CONTRIBUTING.md) guidelines for more information.
 
-## Getting Help
+## Getting help
 
 We love to hear from you, so if you have questions, comments, or find a bug in the
 project, let us know! You can either:
@@ -99,6 +101,6 @@ project, let us know! You can either:
 repository
 - Tweet at us! We're [@DeepgramDevs on Twitter](https://twitter.com/DeepgramDevs)
 
-## Further Reading
+## Further reading
 
-Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
+Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/).
