@@ -5,6 +5,10 @@
 This app aims to demonstrate how to use the Deepgram API's streaming endpoint
 to transcribe voice to text in realtime in a small "Video Chat".
 
+If you launched Glitch directly from a link in Deepgram Console, we have created and implemented a temporary API key for you named ‘talk-time-demo’. This key will expire in 8 hours. If you need to make immediate changes to this app’s access to your Deepgram ASR balance, you can do so by managing your Deepgram API keys in the Deepgram Console under Settings > API Keys. 
+
+Actions taken in Glitch are subject to [Glitch’s Terms of Service and Privacy Policy](https://glitch.com/legal) and are not covered by any Deepgram agreements.
+
 ## Prerequisites
 
 You will need:
@@ -19,7 +23,7 @@ You can run this application by remixing it on Glitch or by running it on your l
 ### Remix on Glitch
 
 [Glitch](https://glitch.com/) comes with an online editor, so you'll have all the necessary tools to 
-explore your own application instance. Actions taken in Glitch are subject to [Glitch’s Terms of Service and Privacy Policy](https://glitch.com/legal) and are not covered by any Deepgram agreements.
+explore your own application instance. 
 
 To remix this application on Glitch, go to the following URL:
 
