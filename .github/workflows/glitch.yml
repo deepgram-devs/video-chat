@@ -2,16 +2,27 @@ name: GLITCH
 
 on:
   push:
-    branches: [ main ]
-    
+    branches: [main]
+
 jobs:
   repo-sync:
     runs-on: ubuntu-latest
     steps:
-    - name: repo-sync
-      uses: wei/git-sync@v3
-      with:
-        source_repo: "https://github.com/deepgram-devs/video-chat.git"
-        source_branch: "main"
-        destination_repo: ${{ secrets.GLITCH_GIT_URL }}
-        destination_branch: "main"
+      - name: repo-sync
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "https://github.com/deepgram-devs/video-chat.git"
+          source_branch: "main"
+          destination_repo: ${{ secrets.GLITCH_GIT_URL }}
+          destination_branch: "main"
+  repo-alt-readme-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/git-alt-readme-sync
+        with:
+          source_repo: "https://github.com/deepgram-devs/video-chat.git"
+          source_branch: "main"
+          destination_repo: ${{ secrets.GLITCH_FROM_CONSOLE_GIT_URL }}
+          destination_branch: "main"
+          alt_readme: .github/workflows/README_FROM_CONSOLE.md
